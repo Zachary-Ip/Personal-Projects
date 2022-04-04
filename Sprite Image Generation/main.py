@@ -91,8 +91,8 @@ def main():
         gan.train_epoch(max_steps=285)
         if (i + 1) % 50 == 0:
             torch.save(
-                gan.generator.state_dict(),"C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\results\\checkpoints" + f"gen.{i:05d}.pt"))
-        save_images(gan, test_noise,"C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\results\\generated" + f"gen.{i:04d}.png"))
+                gan.generator.state_dict(),"C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\results\\checkpoints\\" + f"gen.{i:05d}.pt")
+        save_images(gan, test_noise,"C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\results\\generated\\" + f"gen.{i:04d}.png")
 
         with torch.no_grad():
             reconstructed = gan.generator(gan.encoder(test_ims.cuda())).cpu()
@@ -100,7 +100,7 @@ def main():
         reconstructed = reconstructed.numpy().transpose((1,2,0))
         reconstructed = np.array(reconstructed*255, dtype=np.uint8)
         reconstructed = Image.fromarray(reconstructed)
-        reconstructed.save("C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\results\\reconstructed" + f"gen.{i:04d}.png"))
+        reconstructed.save("C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\results\\reconstructed\\" + f"gen.{i:04d}.png")
 
     images = gan.generate_samples()
     ims = tv.utils.make_grid(images, normalize=True)
