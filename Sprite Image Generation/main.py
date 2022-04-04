@@ -19,7 +19,7 @@ from aegan import AEGAN
 # Define global variables
 BATCH_SIZE = 32
 LATENT_DIM = 16
-EPOCHS = 10
+EPOCHS = 500
 
 def save_images(GAN, vec, filename):
     images = GAN.generate_samples(vec)
@@ -33,7 +33,7 @@ def save_images(GAN, vec, filename):
 def main():
     os.makedirs("C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\results\\generated", exist_ok=True)
     os.makedirs("C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\results\\reconstructed", exist_ok=True)
-    os.makedirs("C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Spritesresults\\checkpoints", exist_ok=True)
+    os.makedirs("C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\results\\checkpoints", exist_ok=True)
 
     root = 'C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\Clean Sprites'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -88,13 +88,11 @@ def main():
         elapsed = int(time.time() - start)
         elapsed = f"{elapsed // 3600:02d}:{(elapsed % 3600) // 60:02d}:{elapsed % 60:02d}"
         print(f"Epoch {i+1}; Elapsed time = {elapsed}s")
-        gan.train_epoch(max_steps=100)
+        gan.train_epoch(max_steps=285)
         if (i + 1) % 50 == 0:
             torch.save(
-                gan.generator.state_dict(),
-                os.path.join("results", "checkpoints", f"gen.{i:05d}.pt"))
-        save_images(gan, test_noise,
-            os.path.join("results", "generated", f"gen.{i:04d}.png"))
+                gan.generator.state_dict(),"C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\results\\checkpoints" + f"gen.{i:05d}.pt"))
+        save_images(gan, test_noise,"C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\results\\generated" + f"gen.{i:04d}.png"))
 
         with torch.no_grad():
             reconstructed = gan.generator(gan.encoder(test_ims.cuda())).cpu()
@@ -102,7 +100,7 @@ def main():
         reconstructed = reconstructed.numpy().transpose((1,2,0))
         reconstructed = np.array(reconstructed*255, dtype=np.uint8)
         reconstructed = Image.fromarray(reconstructed)
-        reconstructed.save(os.path.join("results", "reconstructed", f"gen.{i:04d}.png"))
+        reconstructed.save("C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\results\\reconstructed" + f"gen.{i:04d}.png"))
 
     images = gan.generate_samples()
     ims = tv.utils.make_grid(images, normalize=True)
