@@ -12,6 +12,7 @@ import torchvision as tv
 # Define global variables
 BATCH_SIZE = 32
 LATENT_DIM = 16
+EPOCHS = 500
 
 
 def main(config):
@@ -29,8 +30,8 @@ def main(config):
             tv.transforms.Normalize((0.5, 0.5, 0.5,), (0.5, 0.5, 0.5,))
             ])
     dataset = ImageFolder(
-            root=root,
-            transform=transform
+            root=root#,
+            #transform=transform
             )
     data_loader = DataLoader(dataset,
             batch_size=BATCH_SIZE,

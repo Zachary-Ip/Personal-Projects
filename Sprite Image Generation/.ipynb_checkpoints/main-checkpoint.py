@@ -21,10 +21,11 @@ BATCH_SIZE = 32
 LATENT_DIM = 16
 EPOCHS = 500
 
-def save_images(GAN, vec, filename):
-    images = GAN.generate_samples(vec)
-    ims = tv.utils.make_grid(images[:36], normalize=True, nrow=6,)
-    ims = ims.numpy().transpose((1,2,0))
+# Util function to save images.
+def save_images(GAN, vec, filename): # takes in model object, a vector? and final file name
+    images = GAN.generate_samples(vec) # Generates images from preset vector
+    ims = tv.utils.make_grid(images[:36], normalize=True, nrow=6,) # torchvision makes grid of images
+    ims = ims.numpy().transpose((1,2,0))# transpose images, assuming images come out sideways or something?
     ims = np.array(ims*255, dtype=np.uint8)
     image = Image.fromarray(ims)
     image.save(filename)

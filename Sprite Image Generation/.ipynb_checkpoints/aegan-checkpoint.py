@@ -13,6 +13,7 @@ from PIL import Image
 import numpy as np
 
 EPS = 1e-6
+# Learning rates I think, might be a modifier
 ALPHA_RECONSTRUCT_IMAGE = 1
 ALPHA_RECONSTRUCT_LATENT = 0.5
 ALPHA_DISCRIMINATE_IMAGE = 0.005
@@ -35,7 +36,8 @@ class Generator(nn.Module):
 
     def build_colourspace(self, input_dim: int, output_dim: int):
         """Build a small module for selecting colours."""
-        colourspace = nn.Sequential(
+        # Sequential containers are added in order that they are passed in the constructor
+        colourspace = nn.Sequential( 
             nn.Linear(
                 input_dim,
                 128,
@@ -62,7 +64,8 @@ class Generator(nn.Module):
         """Initialize the modules."""
         projection_widths = [8, 8, 8, 8, 8, 8, 8]
         self.projection_dim = sum(projection_widths) + self.latent_dim
-        self.projection = nn.ModuleList()
+        self.projection = nn.ModuleList() # empty list to hold sub modules, will be added to 
+        # Add linear layers = length of projection widths
         for index, i in enumerate(projection_widths):
             self.projection.append(
                 nn.Sequential(
@@ -81,7 +84,8 @@ class Generator(nn.Module):
         self.colourspace_g = self.build_colourspace(self.projection_dim, 16)
         self.colourspace_b = self.build_colourspace(self.projection_dim, 16)
         self.colourspace_upscaler = nn.Upsample(scale_factor=96)
-
+        
+        # Not sure what this seed is for
         self.seed = nn.Sequential(
             nn.Linear(
                 self.projection_dim,
@@ -90,10 +94,10 @@ class Generator(nn.Module):
             nn.BatchNorm1d(512*3*3),
             nn.LeakyReLU(),
             )
-
+        # Create new empty module lists for upscaling
         self.upscaling = nn.ModuleList()
         self.conv = nn.ModuleList()
-
+        # Build upscaling and conv modules
         self.upscaling.append(nn.Upsample(scale_factor=2))
         self.conv.append(nn.Sequential(
             nn.ZeroPad2d((1, 1, 1, 1)),
