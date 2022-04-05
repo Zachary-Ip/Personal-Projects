@@ -1,6 +1,0 @@
-Things Changed:
-- deleted original data loader (preset to download LSAT or something)
-- added imports and transforms to data_loader
-- added __spec__ = None
-- added BATCH_SIZE and LATENT_DIM
-- in trainer.py changed line 71: data_iter = transforms.ToTensor(iter(self.data_loader))

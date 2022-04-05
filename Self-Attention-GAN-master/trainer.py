@@ -7,7 +7,7 @@ import datetime
 import torch.nn as nn
 from torch.autograd import Variable
 from torchvision.utils import save_image
-from torchvision import transforms
+
 from sagan_models import Generator, Discriminator
 from utils import *
 
@@ -71,7 +71,7 @@ class Trainer(object):
     def train(self):
 
         # Data iterator
-        data_iter = transforms.ToTensor(iter(self.data_loader))
+        data_iter = iter(self.data_loader)
         step_per_epoch = len(self.data_loader)
         model_save_step = int(self.model_save_step * step_per_epoch)
 
