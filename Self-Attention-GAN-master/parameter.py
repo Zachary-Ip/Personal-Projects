@@ -1,5 +1,6 @@
 import argparse
-
+# Change log: changed total step (line 22)  100000 -> 10
+# changed path defaults to: C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/SAGAN/ (line 43-47)
 def str2bool(v):
     return v.lower() in ('true')
 
@@ -19,7 +20,7 @@ def get_parameters():
     parser.add_argument('--version', type=str, default='sagan_1')
 
     # Training setting
-    parser.add_argument('--total_step', type=int, default=1000000, help='how many times to update the generator')
+    parser.add_argument('--total_step', type=int, default=10, help='how many times to update the generator')
     parser.add_argument('--d_iters', type=float, default=5)
     parser.add_argument('--batch_size', type=int, default=64)
     parser.add_argument('--num_workers', type=int, default=2)
@@ -35,15 +36,15 @@ def get_parameters():
     # Misc
     parser.add_argument('--train', type=str2bool, default=True)
     parser.add_argument('--parallel', type=str2bool, default=False)
-    parser.add_argument('--dataset', type=str, default='cifar', choices=['lsun', 'celeb'])
+    parser.add_argument('--dataset', type=str, default='cifar', choices=['lsun', 'celeb','pkmn'])
     parser.add_argument('--use_tensorboard', type=str2bool, default=False)
 
     # Path
-    parser.add_argument('--image_path', type=str, default='./data')
-    parser.add_argument('--log_path', type=str, default='./logs')
-    parser.add_argument('--model_save_path', type=str, default='./models')
-    parser.add_argument('--sample_path', type=str, default='./samples')
-    parser.add_argument('--attn_path', type=str, default='./attn')
+    parser.add_argument('--image_path', type=str, default='C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/SAGAN/data')
+    parser.add_argument('--log_path', type=str, default='C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/SAGAN/logs')
+    parser.add_argument('--model_save_path', type=str, default='C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/SAGAN/models')
+    parser.add_argument('--sample_path', type=str, default='C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/SAGAN/samples')
+    parser.add_argument('--attn_path', type=str, default='C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/SAGAN/attn')
 
     # Step size
     parser.add_argument('--log_step', type=int, default=10)
@@ -51,4 +52,4 @@ def get_parameters():
     parser.add_argument('--model_save_step', type=float, default=1.0)
 
 
-    return parser.parse_args()
+    return parser.parse_args("")
