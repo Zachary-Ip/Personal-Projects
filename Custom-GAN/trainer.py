@@ -1,5 +1,5 @@
 import os
-import timie
+import time
 import torch
 import datetime
 
@@ -45,7 +45,7 @@ class Trainer(object):
         
         self.build_model()
         
-        if self.use_tensorboard()
+        if self.use_tensorboard:
             self.build_tensorboard()
             
         if self.pretrained_model:
@@ -59,7 +59,7 @@ class Trainer(object):
         model_save_step = int(self.model_save_step * step_per_epoch)
         
         # Fixed input for debugging
-        fixed_z = tensor2var(torch.randn(self.batch_size, self.z_dim)))
+        fixed_z = tensor2var(torch.randn(self.batch_size, self.z_dim))
         
         # start with trained model
         if self.pretrained_model:
@@ -114,7 +114,7 @@ class Trainer(object):
                 out,_,_ = self.D(interpolated)
                 
                 grad = torch.autograd.grad(outputs = out,
-                                           inputs = interpolated
+                                           inputs = interpolated,
                                            grad_outputs = torch.ones(out.size()).cuda(),
                                            retain_graph = True,
                                            create_graph = True,
@@ -161,7 +161,50 @@ class Trainer(object):
                 fake_images,_,_ = self.G(fixed_z)
                 save_image(denorm(fake_images.data),
                            os.path.join(self.sample_path,'{}_fake.png'.format(step + 1)))
-                
+            if (step+1) % model_save_step==0:
+                torch.save(self.G.state_dict(),
+                           os.path.join(self.model_save_path, '{}_G.pth'.format(step + 1)))
+                torch.save(self.D.state_dict(),
+                           os.path.join(self.model_save_path, '{}_D.pth'.format(step + 1)))
+            
+    def build_model(self):
+        self.G = Generator(self.batch_size, self.imsize, self.z_dim, self.g_conv_dim).cuda()
+        self.D = Discriminator(self.Batch_size, self.imsize, self.d_conv_dim).cuda()
+        
+        if self.parallel:
+            self.G = nn.DataParallel(self.G)
+            self.D= nn.DataParallel(self.D)
+        
+        # Loss and Optimizer
+        
+        self.g_optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, self.G.parameters()), self.g_lr,  [self.beta1, self.beta2])
+        self.d_optimizer = torch.optim.Adam(filter(lambda p: p.requires_grad, self.D.parameters()), self.d_lr, [self.beta1, self.beta2])
+        
+        self.c_loss = torch.nn.CrossEntropyLoss()
+        
+        # Print networks
+        print(self.G)
+        print(self.D)
+        
+    def build_tensorboard(self):
+        from logger import Logger
+        self.logger = Logger(self.log_path)
+        
+    def load_pretrained_model(self):
+        self.G.load_state_dict(torch.load(os.path.join(
+            self.model_save_path, '{}_G.pth'.format(self.pretrained_model))))
+        self.D.load_state_dict(torch.load(os.path.join(
+            self.model_save_path, '{}_D.pth'.format(self.pretrained_model))))
+        print('loaded trained models (step: {})..!'.format(self.pretrained_model))
+
+    def reset_grad(self):
+        self.d_optimizer.zero_grad()
+        self.g_optimizer.zero_grad()
+
+    def save_sample(self, data_iter):
+        real_images, _ = next(data_iter)
+        save_image(denorm(real_images), os.path.join(self.sample_path, 'real.png'))
+
                 
         
         

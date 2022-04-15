@@ -1,11 +1,11 @@
 import torch
 import torchvision.datasets as dsets
-from torch vision import transforms
+from torchvision import transforms
 
 class Data_Loader():
     def __init__(self):
         self.dataset = 'pkmn'
-        self.path = 'C:\Users\ipzac\Documents\Project Data\Pokemon Sprites\Clean Sprites'
+        self.path = 'C:\\Users\\ipzac\Documents\\Project Data\\Pokemon Sprites\\Clean Sprites'
         self. imsize = 96
         self. batch = 64
         self.shuf = True
@@ -24,7 +24,7 @@ class Data_Loader():
     def loader(self):
         transforms = self.transform()
         dataset = dsets.ImageFolder(
-            root = self.path
+            root = self.path,
             transform = transforms
             )
         loader = torch.utils.data.DataLoader(dataset = dataset,
