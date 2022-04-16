@@ -16,31 +16,32 @@ class Trainer(object):
         
         self.model = 'sagan' # sagan or qgan
         self.adv_loss = 'wgan-gp'  #wgan-gp or hinge
-        self.imsize = self.data_loader.imsize # 96
+        self.imsize = 64
         self.g_num = 5
         self.z_dim = 128
         self.g_conv_dim = 64
         self.d_conv_dim = 64
-        self.parallel = True # default false
+        self.parallel = False # default false
         
         self.lambda_gp = 10
-        self.total_steps = 10
+        self.total_steps = 525000
         self.d_iters = 5
-        self. batch_size = 64
+        self.batch_size = 64
         self.num_workers = self.data_loader.num_workers # 2 
-        self.g_lr = 0.0001
-        self.d_lr = 0.0004
-        self.lr_decay = 0.095
+        self.g_lr = 0.0002
+        self.d_lr = 0.0007
+        self.lr_decay = 0.0999
         self.beta1 = 0.0
         self.beta2 = 00.9
         self.pretrained_model = None
+        self.log_step = 100
+        self.sample_step = 250
         
-        self.dataset = 'pkmn'
         self.use_tensorboard = False
-        self.image_path = self.data_loader.path
-        self.log_path = 'C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/SAGAN/logs'
-        self.model_save_path = 'C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/SAGAN/models'
-        self.sample_path = 'C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/SAGAN/samples'
+        self.image_path = 'C:\\Users\\ipzac\Documents\\Project Data\\Pokemon Sprites\\Crop Sprites'
+        self.log_path = 'C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/Custom/logs'
+        self.model_save_path = 'C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/Custom/models'
+        self.sample_path = 'C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/Custom/samples'
         self.model_save_step = 1.0
         
         self.build_model()
@@ -70,7 +71,7 @@ class Trainer(object):
         # Start time
         start_time = time.time()
         
-        for step in range(start, self.total_step):
+        for step in range(start, self.total_steps):
             
             # Train D
             self.D.train()
@@ -85,7 +86,7 @@ class Trainer(object):
             # Compute Loss with real images
             # dr1, dr2, df1, df2, gf1, gf2 are attention scores
             real_images = tensor2var(real_images)
-            d_out_fake, df1, df2 = self.D(fake_images)
+            d_out_real, df1, df2 = self.D(real_images)
             if self.adv_loss == 'wgan-gp':
                 d_loss_real = - torch.mean(d_out_real)
             elif  self.adv_loss == 'hinge':
@@ -110,7 +111,7 @@ class Trainer(object):
             if self.adv_loss == 'wgan-gp':
                 #compute gradient penalty
                 alpha = torch.rand(real_images.size(0),1,1,1).cuda().expand_as(real_images)
-                interpolated = Variable(alpha * real_iamges.data + (1 - alpha) * fake_images.data, requires_grad = True)
+                interpolated = Variable(alpha * real_images.data + (1 - alpha) * fake_images.data, requires_grad = True)
                 out,_,_ = self.D(interpolated)
                 
                 grad = torch.autograd.grad(outputs = out,
@@ -137,7 +138,7 @@ class Trainer(object):
             fake_images,_,_ = self.G(z)
                                         
             # Compute loss with fake images
-            g_out_fake,_,_ = self.D(fake_iamges) # batch x n
+            g_out_fake,_,_ = self.D(fake_images) # batch x n
             if self.adv_loss =='wgan-gp':
                 g_loss_fake = - g_out_fake.mean()
             elif self.adv_loss == 'hinge':
@@ -153,9 +154,9 @@ class Trainer(object):
                 elapsed = str(datetime.timedelta(seconds = elapsed))
                 print("Elapsed [{}], G_step [{}/{}], D_step[{}/{}], d_out_real: {:.4f}, "
                       " ave_gamma_l3: {:.4f}, ave_gamma_l4: {:.4f}".
-                      format(elapsed, step + 1, self.total_step, (step + 1),
-                             self.total_step , d_loss_real.data[0],
-                             self.G.attn1.gamma.mean().data[0], self.G.attn2.gamma.mean().data[0] ))
+                      format(elapsed, step + 1, self.total_steps, (step + 1),
+                             self.total_steps, d_loss_real.data,
+                             self.G.attn1.gamma.mean().data, self.G.attn2.gamma.mean().data )) # removed [0] from data
             # Sample images
             if (step + 1) % self.sample_step == 0:
                 fake_images,_,_ = self.G(fixed_z)
@@ -169,7 +170,7 @@ class Trainer(object):
             
     def build_model(self):
         self.G = Generator(self.batch_size, self.imsize, self.z_dim, self.g_conv_dim).cuda()
-        self.D = Discriminator(self.Batch_size, self.imsize, self.d_conv_dim).cuda()
+        self.D = Discriminator(self.batch_size, self.imsize, self.d_conv_dim).cuda()
         
         if self.parallel:
             self.G = nn.DataParallel(self.G)
@@ -183,8 +184,8 @@ class Trainer(object):
         self.c_loss = torch.nn.CrossEntropyLoss()
         
         # Print networks
-        print(self.G)
-        print(self.D)
+        #print(self.G)
+        #print(self.D)
         
     def build_tensorboard(self):
         from logger import Logger

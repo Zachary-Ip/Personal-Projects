@@ -8,13 +8,13 @@ def main():
     cudnn.benchmark = True
     
     # Data loader
-    data_loader = Data_Loader
+    data_loader = Data_Loader()
     
     # Create relevant directories
-    make_folder() # save path
-    make_folder() # sample path
-    make_folder() #log path
-    make_folder() #attn path
+    make_folder('C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/Custom/models') # save path
+    make_folder('C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/Custom/samples') # sample path
+    make_folder('C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/Custom/logs') #log path
+    make_folder('C:/Users/ipzac/Documents/Project Data/Pokemon Sprites/Custom/attn') #attn path
     
     
     # Train model
