@@ -505,7 +505,7 @@ class AEGAN():
         self.generator = self.generator.to(self.device)
         self.optim_g = optim.Adam(self.generator.parameters(),
                                   lr=2e-4, betas=(0.5, 0.999),
-                                  weight_decay=1e-8)
+                                  weight_decay=1e-10)
 
     def _init_encoder(self):
         self.encoder = Encoder(latent_dim=self.latent_dim, device=self.device)

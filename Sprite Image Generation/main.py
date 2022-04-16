@@ -38,9 +38,12 @@ def main():
     root = 'C:\\Users\\ipzac\\Documents\\Project Data\\Pokemon Sprites\\Clean Sprites'
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     transform = tv.transforms.Compose([
-            tv.transforms.RandomAffine(0, translate=(5/96, 5/96), fill=(255,255,255)),
+            tv.transforms.RandomAdjustSharpness(2),
+            tv.transforms.RandomAdutoContrast(),
+            tv.transforms.RandomAffine(degrees=(0,60), translate=(5/96, 5/96), fill=(255,255,255)),
             tv.transforms.ColorJitter(hue=0.5),
             tv.transforms.RandomHorizontalFlip(p=0.5),
+            tv.transforms.RandomPerspective(distortion_scale = 0.5, p = 0.85),
             tv.transforms.ToTensor(),
             tv.transforms.Normalize((0.5, 0.5, 0.5,), (0.5, 0.5, 0.5,))
             ])

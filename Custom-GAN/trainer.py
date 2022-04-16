@@ -28,13 +28,13 @@ class Trainer(object):
         self.d_iters = 5
         self.batch_size = 64
         self.num_workers = self.data_loader.num_workers # 2 
-        self.g_lr = 0.0001
-        self.d_lr = 0.0004
-        self.lr_decay = 0.01
+        self.g_lr = 0.0003
+        self.d_lr = 0.0006
+        self.lr_decay = 1e-8
         self.beta1 = 0.5
         self.beta2 = 0.9
         self.pretrained_model = None
-        self.log_step = 10000
+        self.log_step = 1000
         self.sample_step = 500
         
         self.use_tensorboard = False
