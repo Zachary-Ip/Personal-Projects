@@ -71,10 +71,10 @@ class Generator(nn.Module):
         if self.imsize == 64:
             layer4 = []
             curr_dim = int(curr_dim / 2)
+            layer4.append(nn.Dropout(p=0.2, inplace=False))
             layer4.append(SpectralNorm(nn.ConvTranspose2d(curr_dim, int(curr_dim / 2), 4, 2, 1)))
             layer4.append(nn.BatchNorm2d(int(curr_dim / 2)))
             layer4.append(nn.ReLU())
-            layer4.append = nn.Dropout(p=0.2, inplace=False)
             self.l4 = nn.Sequential(*layer4)
             curr_dim = int(curr_dim / 2)
 
@@ -128,6 +128,7 @@ class Discriminator(nn.Module):
 
         if self.imsize == 64:
             layer4 = []
+            layer4.append(nn.Dropout(p=0.2, inplace=False))
             layer4.append(SpectralNorm(nn.Conv2d(curr_dim, curr_dim * 2, 4, 2, 1)))
             layer4.append(nn.LeakyReLU(0.1))
             self.l4 = nn.Sequential(*layer4)
