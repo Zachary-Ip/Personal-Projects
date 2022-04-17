@@ -14,11 +14,11 @@ class Data_Loader():
     def transform(self):
         transform = transforms.Compose([
             transforms.RandomAdjustSharpness(2),
-            transforms.RandomAdutoContrast(),
+            transforms.RandomAutocontrast(),
             transforms.RandomAffine(degrees=(0,60), translate=(5/96, 5/96), fill=(255,255,255)),
             transforms.ColorJitter(hue=0.5),
             transforms.RandomHorizontalFlip(p=0.5),
-            transforms.RandomPerspective(distortion_scale = 0.5, p = 0.85),
+            transforms.RandomPerspective(distortion_scale = 0.5, p = 0.85,fill=255),
             transforms.ToTensor(),
             transforms.Normalize((0.5, 0.5, 0.5,), (0.5, 0.5, 0.5,))
             ])
